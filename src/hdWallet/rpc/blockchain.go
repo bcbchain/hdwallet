@@ -359,12 +359,25 @@ func allBalance(address keys.Address) (items *[]AllBalanceItemResult, err error)
 		return
 	}
 
+	balanceItems := make([]AllBalanceItemResult, 0)
+
+	if len(result.Response.Value) == 0 {
+		var baseTokenName string
+		baseTokenAddress := genesisToken()
+		baseTokenName, err = tokenName(baseTokenAddress)
+		balanceItems = append(balanceItems,
+			AllBalanceItemResult{
+				TokenAddress: baseTokenAddress,
+				TokenName:    baseTokenName,
+				Balance:      "0"})
+		return &balanceItems, err
+	}
+
 	err = json.Unmarshal(result.Response.Value, &tokens)
 	if err != nil {
 		return
 	}
 
-	balanceItems := make([]AllBalanceItemResult, 0)
 	for _, token := range tokens {
 		splitToken := strings.Split(token, "/")
 		if splitToken[4] != "token" || len(splitToken) != 6 {
