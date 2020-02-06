@@ -10,6 +10,5 @@ func getHDWalletPassword(prompt string, buf *bufio.Reader) (pass string, err err
 	if err != nil {
 		return "", err
 	}
-
 	return pass, nil
 }

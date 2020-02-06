@@ -19,34 +19,25 @@ type BcbXTransaction struct {
 	To       keys.Address // 合约地址
 	Data     []byte       // 调用智能合约所需要的参数，RLP编码格式。
 }
-
 func PackAndSignTx(nonce, gasLimit uint64, note, tokenAddress, toAddress string, value, accPrikeyBytes []byte) (string, error) {
-
 	var mi MethodInfo
 	var err error
-
 	methodId := atm.CalcMethodId(prototype.TtTransfer)
 	mi.MethodID = binary.BigEndian.Uint32(methodId)
-
 	var itemsBytes = make([][]byte, 0)
-
 	itemsBytes = append(itemsBytes, []byte(toAddress))
 	itemsBytes = append(itemsBytes, value)
-
 	mi.ParamData, err = rlp.EncodeToBytes(itemsBytes)
 	if err != nil {
 		return "", err
 	}
-
 	data, err := rlp.EncodeToBytes(mi)
 	if err != nil {
 		return "", err
 	}
-
 	tx1 := NewTransaction(nonce, gasLimit, note, tokenAddress, data)
 	return tx1.TxGen(accPrikeyBytes)
 }
-
 func NewTransaction(nonce uint64, gasLimit uint64, note string, to keys.Address, data []byte) BcbXTransaction {
 	tx := BcbXTransaction{
 		Nonce:    nonce,
@@ -57,7 +48,6 @@ func NewTransaction(nonce uint64, gasLimit uint64, note string, to keys.Address,
 	}
 	return tx
 }
-
 // 定义生成交易的接口函数，其中tx.Data已经按RLP进行编码
 //返回构造好的交易数据，MAC.Version.Payload.<1>.Signature，Payload和Signature格式是RLP编码后的HexString
 func (tx *BcbXTransaction) TxGen(accPrikeyBytes []byte) (string, error) {
@@ -68,12 +58,10 @@ func (tx *BcbXTransaction) TxGen(accPrikeyBytes []byte) (string, error) {
 	}
 	txBytes := make([]byte, size)
 	_, _ = r.Read(txBytes)
-
 	sigInfo, err := SignData(accPrikeyBytes, txBytes)
 	if err != nil {
 		return "", err
 	}
-
 	//RLP编码签名信息
 	size, r, err = rlp.EncodeToReader(sigInfo)
 	if err != nil {
@@ -81,30 +69,23 @@ func (tx *BcbXTransaction) TxGen(accPrikeyBytes []byte) (string, error) {
 	}
 	sigBytes := make([]byte, size)
 	_, _ = r.Read(sigBytes) //转换为字节流
-
 	txString := base58.Encode(txBytes)
 	sigString := base58.Encode(sigBytes)
-
 	MAC := string(crypto.GetChainId()) + "<tx>"
 	Version := "v1"
 	SignerNumber := "<1>"
-
 	return MAC + "." + Version + "." + txString + "." + SignerNumber + "." + sigString, nil
 }
-
 func SignData(accPrikeyBytes, data []byte) (*types.Ed25519Sig, error) {
 	if len(data) <= 0 {
 		return nil, errors.New("user data which wants be signed length needs more than 0")
 	}
-
 	priKey := crypto.PrivKeyEd25519FromBytes(accPrikeyBytes)
 	pubKey := priKey.PubKey()
-
 	sigInfo := types.Ed25519Sig{
 		SigType:  "ed25519",
 		PubKey:   pubKey.(crypto.PubKeyEd25519),
 		SigValue: priKey.Sign(data).(crypto.SignatureEd25519),
 	}
-
 	return &sigInfo, nil
 }

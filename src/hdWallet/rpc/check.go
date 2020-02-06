@@ -21,23 +21,18 @@ func checkAddress(chainID string, addr smc.Address) error {
 	if dataLen < 4 {
 		return errors.New("Base58Addr parse error! ")
 	}
-
 	hasher := ripemd160.New()
 	hasher.Write(addrData[:dataLen-4])
 	md := hasher.Sum(nil)
-
 	if bytes.Compare(md[:4], addrData[dataLen-4:]) != 0 {
 		return errors.New("Address checksum is error! ")
 	}
-
 	return nil
 }
-
 func requireUint64(valueStr string) (uint64, error) {
 	value, err := strconv.ParseUint(valueStr, 10, 64)
 	if err != nil {
 		return 0, err
 	}
-
 	return value, nil
 }

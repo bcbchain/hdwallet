@@ -2,7 +2,7 @@
 chainID: "bcb"
 
 #区块链版本
-chainVersion: 2
+chainVersion: 1
 
 # 本地服务监听地址:端口
 serverAddr: "tcp://0.0.0.0:37657"
