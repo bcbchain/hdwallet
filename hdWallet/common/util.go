@@ -3,7 +3,6 @@ package common
 import (
 	"encoding/binary"
 	"encoding/hex"
-	"github.com/pkg/errors"
 	"math/big"
 	"os"
 	"os/exec"
@@ -11,6 +10,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 func ToHex(val uint64) string {
@@ -18,13 +19,16 @@ func ToHex(val uint64) string {
 	binary.BigEndian.PutUint64(valBytes, val)
 	return string("0x") + hex.EncodeToString(valBytes)
 }
+
 func BytesToHex(valBytes []byte) string {
 	return string("0x") + hex.EncodeToString(valBytes)
 }
+
 func FloatToHex(val string) string {
 	resultInt := FloatStrToBigInt(val)
 	return BytesToHex(resultInt.Bytes())
 }
+
 func ParseHexString(hexStr string, fieldName string, lenConstraint int) error {
 	if len(hexStr)%2 != 0 {
 		return errors.New(fieldName + " must be hex string with even length")
@@ -35,26 +39,31 @@ func ParseHexString(hexStr string, fieldName string, lenConstraint int) error {
 	}
 	return nil
 }
+
 func UintToHex(val uint64) string {
 	var buf = make([]byte, 8)
 	binary.BigEndian.PutUint64(buf, val)
 	return string("0x") + hex.EncodeToString(buf)
 }
+
 func UintToBigInt(val uint64) big.Int {
 	var buf = make([]byte, 8)
 	binary.BigEndian.PutUint64(buf, val)
 	return *new(big.Int).SetBytes(buf)
 }
+
 func IntToHex(val int64) string {
 	var buf = make([]byte, 8)
 	binary.BigEndian.PutUint64(buf, uint64(val))
 	return string("0x") + hex.EncodeToString(buf)
 }
+
 func IntToByte(val int64) []byte {
 	var buf = make([]byte, 8)
 	binary.BigEndian.PutUint64(buf, uint64(val))
 	return buf
 }
+
 func JudgeFloatStr(val string) {
 	pattern := `^\d+(\.\d{0,9})?$`
 	valid, err := regexp.Match(pattern, []byte(val))
@@ -66,7 +75,9 @@ func JudgeFloatStr(val string) {
 		logger.Info(`The money is illegal. It can only be float and >= 0.000000001`)
 		panic(`The money is illegal. It can only be float and >= 0.000000001`)
 	}
+	//return true
 }
+
 func FloatStrToBigInt(val string) big.Int {
 	JudgeFloatStr(val)
 	var valStr []string
@@ -92,6 +103,7 @@ func FloatStrToBigInt(val string) big.Int {
 	} else {
 		valStr = append(valStr, val)
 	}
+
 	intStr := valStr[0]
 	for i := 0; i < len(intStr); i++ {
 		intNum, _ := strconv.ParseInt(string(intStr[i]), 10, 64)
@@ -101,6 +113,7 @@ func FloatStrToBigInt(val string) big.Int {
 	valInt.Mul(valInt, big.NewInt(1e9))
 	return *valInt.Add(valInt, valFloat)
 }
+
 func CurrentDirectory() (string, error) {
 	file, err := exec.LookPath(os.Args[0])
 	if err != nil {

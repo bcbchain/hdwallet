@@ -1,7 +1,7 @@
 package rpc
 
 import (
-	rpcserver "common/rpc/lib/server"
+	rpcserver "github.com/bcbchain/bclib/rpc/lib/server"
 )
 
 var Routes = map[string]*rpcserver.RPCFunc{
@@ -9,6 +9,7 @@ var Routes = map[string]*rpcserver.RPCFunc{
 	"bcb_walletCreate":    rpcserver.NewRPCFunc(WalletCreate, "password,path"),
 	"bcb_transfer":        rpcserver.NewRPCFunc(WalletTransfer, "password,path,walletParams"),
 	"bcb_transferOffline": rpcserver.NewRPCFunc(WalletTransferOffline, "password,path,walletParams"),
+
 	// block chain api
 	"bcb_blockHeight":    rpcserver.NewRPCFunc(BlockHeight, ""),
 	"bcb_block":          rpcserver.NewRPCFunc(Block, "height"),
