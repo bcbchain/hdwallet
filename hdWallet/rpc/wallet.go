@@ -6,12 +6,11 @@ import (
 	"strings"
 
 	types2 "github.com/bcbchain/bcbchain/abciapp_v1.0/types"
-	bignumber "github.com/bcbchain/bclib/bignumber_v1.0"
+	"github.com/bcbchain/bclib/bn"
 	"github.com/bcbchain/bclib/hdwal"
 	"github.com/bcbchain/bclib/tendermint/go-crypto"
 	tx2 "github.com/bcbchain/bclib/tx/v2"
 	"github.com/bcbchain/bclib/types"
-	"github.com/bcbchain/sdk/sdk/bn"
 	"github.com/btcsuite/btcutil/base58"
 	"hdwallet/hdWallet/common"
 )
@@ -49,7 +48,7 @@ func transfer(password, path string, gasLimit uint64, walletParams TransferParam
 		return
 	}
 
-	value := bignumber.NewNumberString(walletParams.Value)
+	value := bn.NewNumberStringBase(walletParams.Value, 10)
 
 	if config.ChainVersion == "1" {
 		txStr, err = PackAndSignTx(nonceResult.Nonce, gasLimit, walletParams.Note, walletParams.SmcAddress, walletParams.To, value.Bytes(), accPrikeyBytes[:])
@@ -91,7 +90,7 @@ func transfer(password, path string, gasLimit uint64, walletParams TransferParam
 func walletTransferOffline(password, path string, gasLimit uint64, walletParams TransferOfflineParam) (result *TransferOfflineResult, err error) {
 
 	config := common.GetConfig()
-	value := bignumber.NewNumberString(walletParams.Value)
+	value := bn.NewNumberStringBase(walletParams.Value, 10)
 
 	var txStr string
 	var accPrikeyBytes crypto.PrivKeyEd25519
