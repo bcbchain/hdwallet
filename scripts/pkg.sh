@@ -15,11 +15,12 @@ for arch in "${arch_list[@]}"; do
 	for os in "${os_list[@]}"; do
 		echo "--> $os/$arch"
 		mkdir -p build/bin/"${os}_${arch}"
+		cp -r bundle/.config build/bin/"${os}_${arch}"
 		GOOS=${os} GOARCH=${arch} go build -tags="${BUILD_TAGS}" -o "build/bin/${os}_${arch}" ./cmd/...
 
 		pushd "build/bin/${os}_${arch}" > /dev/null || exit 1
 		pwd
-    tar -zcvf ../../dist/$project_name\_$VERSION\_${os}_${arch}.tar.gz ./*
+    tar -zcvf ../../dist/$project_name\_$VERSION\_${os}_${arch}.tar.gz ./* .config
     popd > /dev/null || exit 1
 	done
 done
