@@ -52,7 +52,7 @@ func (c *Config) initProtocol() error {
 		if !strings.HasPrefix(ip, "http") {
 			httpsIp := "https://" + ip
 
-			rpc := rpcclient.NewJSONRPCClientEx(httpsIp, "", true)
+			rpc := rpcclient.NewJSONRPCClientEx(httpsIp, "", false)
 			_, err := rpc.Call("abci_info", map[string]interface{}{}, result)
 			if err == nil {
 				c.NodeAddrSlice[index] = httpsIp
@@ -61,7 +61,7 @@ func (c *Config) initProtocol() error {
 
 			httpIp := "http://" + ip
 
-			rpc = rpcclient.NewJSONRPCClientEx(httpIp, "", true)
+			rpc = rpcclient.NewJSONRPCClientEx(httpIp, "", false)
 			_, err = rpc.Call("abci_info", map[string]interface{}{}, result)
 			if err == nil {
 				c.NodeAddrSlice[index] = httpIp
